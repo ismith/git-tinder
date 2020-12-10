@@ -34,4 +34,5 @@ script if it doesn't work.
 
 CONTRIBUTING:
 =============
-PRs welcome!
+PRs welcome! We run [shellcheck](https://github.com/koalaman/shellcheck) on PRs,
+see `.github/workflows/`.

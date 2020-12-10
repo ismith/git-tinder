@@ -1,6 +1,10 @@
 #!/bin/bash
 set -euo pipefail
 
+# check that shellcheck runs in CI
+f=$1
+
+
 doc=$(cat <<EOF
 Runs \`git add -p\` in ... Tinder mode.
 
