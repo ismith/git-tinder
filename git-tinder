@@ -45,7 +45,6 @@ EOF
 # also getwindowpid. If, when this script runs, we get its windowpid, possibly
 # we could constrain these actions to happen iff the right window is focused?
 conf=$(cat <<EOF
-# swipe right to stage a hunk (hurr), swipe left to leave it unstaged
 gesture swipe right 3 xdotool key y Return
 gesture swipe left 3 xdotool key n Return
 
