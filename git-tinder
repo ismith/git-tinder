@@ -46,12 +46,12 @@ EOF
 # we could constrain these actions to happen iff the right window is focused?
 conf=$(cat <<EOF
 # swipe right to stage a hunk (hurr), swipe left to leave it unstaged
-gesture swipe right 3 xdotool type y
-gesture swipe left 3 xdotool type n
+gesture swipe right 3 xdotool key y Return
+gesture swipe left 3 xdotool key n Return
 
-gesture pinch out xdotool type s
-gesture pinch in xdotool type s
-gesture swipe up 3 xdotool type s
+gesture pinch out xdotool key s Return
+gesture pinch in xdotool key s Return
+gesture swipe up 3 xdotool key s Return
 EOF
 )
 
@@ -64,7 +64,8 @@ if [[ "$first" == "-h" || "$first" == "--help" || "$first" == "-help" ]]; then
 fi
 
 # DEBUGGING: if you add -v , libinput-gestures will print a gesture's action in
-# addition to performing it. -d will print but not perform the action.
+# addition to performing it. -d will print but not perform the action. -l will
+# print env & config and quit.
 libinput-gestures -c <(echo "$conf") & LIBINPUT_GESTURES_PID=$!
 
 # wait for libinput-gestures to start successfully (and not die due to missing
