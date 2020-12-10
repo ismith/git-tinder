@@ -1,0 +1,74 @@
+#!/bin/bash
+set -euo pipefail
+
+doc=$(cat <<EOF
+Runs \`git add -p\` in ... Tinder mode.
+
+Swipe right to stage a hunk (IYKWIM. \`man git-add\` if not, or leave your mind
+in the gutter ;-) ), swipe left to give it a pass.
+
+This also supports splitting the current hunk if you pinch out. (Or pinch in, or
+swipe up - I have had better luck getting those to register.)
+
+All swipes are 3-finger gestures.
+
+Credit for the idea goes to
+https://twitter.com/benawad/status/1336691028473090050 and
+https://twitter.com/bcrypt/status/1336934917599444992
+
+INSTALLATION:
+=============
+Put this in your PATH, and it'll work as a git subcommand (\`git tinder\`).
+
+DEPENDENCIES:
+=============
+On my XPS 13 with Ubuntu 18.04, install was:
+
+sudo apt install xdotool libinput-tools
+git clone https://github.com/bulletmark/libinput-gestures
+cd libinput-gestures
+sudo make install
+sudo usermod -a -G input \$USER
+
+and restart to pick up the new group. YMMV. See the DEBUGGING comment in the
+script if it doesn't work.
+EOF
+)
+
+# possible enhancement: i _think_ xdotool can detect the focused window, and
+# also getwindowpid. If, when this script runs, we get its windowpid, possibly
+# we could constrain these actions to happen iff the right window is focused?
+conf=$(cat <<EOF
+# swipe right to stage a hunk (hurr), swipe left to leave it unstaged
+gesture swipe right 3 xdotool type y
+gesture swipe left 3 xdotool type n
+
+gesture pinch out xdotool type s
+gesture pinch in xdotool type s
+gesture swipe up 3 xdotool type s
+EOF
+)
+
+# enhancement: support `$@` ? -d and -v at least would be nice to pass along to
+# libinput-gestures for debugging
+first="${1:-}"
+if [[ "$first" == "-h" || "$first" == "--help" || "$first" == "-help" ]]; then
+    echo "$doc"
+    exit 0
+fi
+
+# DEBUGGING: if you add -v , libinput-gestures will print a gesture's action in
+# addition to performing it. -d will print but not perform the action.
+libinput-gestures -c <(echo "$conf") & LIBINPUT_GESTURES_PID=$!
+
+# wait for libinput-gestures to start successfully (and not die due to missing
+# deps, user not in the input group, already running instance, etc)
+sleep 0.5s
+
+if ! ps -p $LIBINPUT_GESTURES_PID > /dev/null 2>&1; then
+    exit 1
+fi
+
+git add -p
+
+trap 'kill $LIBINPUT_GESTURES_PID' EXIT SIGINT ERR
