@@ -23,11 +23,13 @@ DEPENDENCIES:
 =============
 On my XPS 13 with Ubuntu 18.04, install was:
 
+```
 sudo apt install xdotool libinput-tools
 git clone https://github.com/bulletmark/libinput-gestures
 cd libinput-gestures
 sudo make install
 sudo usermod -a -G input $USER
+```
 
 and restart to pick up the new group. YMMV. See the DEBUGGING comment in the
 script if it doesn't work.
